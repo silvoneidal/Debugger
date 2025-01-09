@@ -183,7 +183,7 @@ root.title("Debuger v1.0.0 by DALÇÓQUIO AUTOMAÇÃO")
 root.geometry("500x400")   
 
 # Frame para configurações
-frame_config = ctk.CTkFrame(root, width=780)
+frame_config = ctk.CTkFrame(root)
 frame_config.grid(row=0, column=0, sticky="ew", padx=10, pady=10) # Usando grid aqui também
 frame_config.grid_propagate(False)
 
