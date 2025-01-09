@@ -1,7 +1,7 @@
 /*
   Data: 23/12/2024
   Autor: DALÇÓQUIO AUTOMAÇÃO
-  Exemplo: Leitura dos valores de variáveis com App Debuger em Visual Basic
+  Exemplo: Leitura dos valores de variáveis com App Debugger.exe em Visual Basic
  
 */
 

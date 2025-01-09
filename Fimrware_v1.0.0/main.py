@@ -179,7 +179,7 @@ def clear_received_message():
 
 # Interface CustomTkinter
 root = ctk.CTk()
-root.title("Debuger v1.0.0 by DALÇÓQUIO AUTOMAÇÃO")
+root.title("Debugger v1.0.0 by DALÇÓQUIO AUTOMAÇÃO")
 root.geometry("500x400")   
 
 # Frame para configurações

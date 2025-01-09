@@ -162,7 +162,7 @@ def clear_listview():
 
 # Interface CustomTkinter
 root = ctk.CTk()
-root.title("Debuger Beta by DALÇÓQUIO AUTOMAÇÃO")
+root.title("Debugger Beta by DALÇÓQUIO AUTOMAÇÃO")
 root.geometry("500x500") 
 
 # Frame para configurações

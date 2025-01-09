@@ -1,1 +1,1 @@
-https://github.com/silvoneidal/Debuger.git
+https://github.com/silvoneidal/Debugger.git
