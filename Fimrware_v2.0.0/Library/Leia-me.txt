@@ -1,3 +1,4 @@
-1.Não instale, e sim copie a pasta Debugger e cole dentro da pasta Library da sua IDE Arduino
-
-2.Em seguida abra sua IDE Arduino e procure em Exemplos -> Debugger -> Blink e se divirta...
+1.Instale a library Debugger.zip na sua IDE Arduino
+2.Em seu sketch use #include <Debugger.h>
+3.Em seu sketch use os comandos: Debugger(index, variável); e Debugger(index, "BREAK");
+3.Em Exemplos -> Debugger -> Blink use este para testes.

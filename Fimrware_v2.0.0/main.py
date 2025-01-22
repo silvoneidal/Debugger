@@ -97,7 +97,7 @@ def conectar_serial():
                 baudrate_combo.configure(state='normal')
                 style.configure("TLabel", background="red")
                 frame_conexao.configure(style="TLabel")
-                break_button.configure(text="Break", fg_color="green")
+                break_button.configure(text="", fg_color="green")
         except Exception as e:
             print(f"Erro ao desconectar: {e}")
             
@@ -156,7 +156,7 @@ def process_protocol_data(data):
 def clear_break_point():
     data = '#'
     send_data(data)
-    break_button.configure(text="Break", fg_color="green")
+    break_button.configure(text="", fg_color="green")
     
 # Função para editar o nome da variável selecionada no listview
 def edit_variable_name():
@@ -258,7 +258,7 @@ variable_entry.pack(side=tk.LEFT, padx=0)
 ##add_button.pack(side=tk.LEFT, padx=5)
 
 # Botão para clear de break point
-break_button = ctk.CTkButton(frame_add_variable, font=new_fonte, text="Break", command=clear_break_point, width=100, fg_color="green")
+break_button = ctk.CTkButton(frame_add_variable, font=new_fonte, text="", command=clear_break_point, width=100, fg_color="green")
 break_button.pack(side=tk.LEFT, padx=10)
 
 # Botão para editar a variável
