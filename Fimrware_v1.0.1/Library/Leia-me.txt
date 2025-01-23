@@ -1,3 +1,0 @@
-1.Não instale, e sim copie a pasta Debugger e cole dentro da pasta Library da sua IDE Arduino
-
-2.Em seguida abra sua IDE Arduino e procure em Exemplos -> Debugger -> Blink e se divirta...

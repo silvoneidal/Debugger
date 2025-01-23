@@ -48,7 +48,7 @@ def read_serial():
                 scan_button.configure(state='normal')  # Habilita o botão
                 com_port_combo.configure(state='normal')  # Habilita o combo
                 baudrate_combo.configure(state='normal')  # Habilita o combo
-                conectar_serial() # Somente para atualizar variáveis
+                conectar_serial() # Somente para atualizar debugger
                 atualizar_com_port_combo() # Atualizar portas ativas
                 print(f"Porta desconectada...")
             print(f"Erro ao ler da porta serial: {e}")
@@ -98,21 +98,22 @@ def conectar_serial():
                 style.configure("TLabel", background="red")
                 frame_conexao.configure(style="TLabel")
                 break_button.configure(text="", fg_color="green")
+                clear_listview()
         except Exception as e:
             print(f"Erro ao desconectar: {e}")
             
 
-# Função para adicionar o nome da variável ao listview
-def add_variable_name():
-    variable_name = variable_entry.get()
-    if variable_name:  # Verifica se o campo não está vazio
+# Função para adicionar o nome do debugger ao listview
+def add_debugger_name():
+    debugger_name = debugger_entry.get()
+    if debugger_name:  # Verifica se o campo não está vazio
         index = len(tree.get_children()) + 1  # Índice começa em 1
-        tree.insert("", "end", values=(index, variable_name, 0))  # Valor padrão 0
-        variable_entry.delete(0, tk.END)  # Limpa o campo de entrada
+        tree.insert("", "end", values=(index, debugger_name, 0))  # Valor padrão 0
+        debugger_entry.delete(0, tk.END)  # Limpa o campo de entrada
         
 
-def add_variable_value(index, value):
-    """Adiciona ou atualiza o valor no ListView no índice especificado."""
+# Função para adiciona ou atualizar o valor no ListView no índice especificado.
+def add_debugger_value(index, value):
     children = tree.get_children()
     found = False
     current_time = datetime.now().strftime('%H:%M:%S') # Obtenha a hora atual
@@ -123,7 +124,7 @@ def add_variable_value(index, value):
             found = True
             break
     if not found:
-        tree.insert("", "end", values=(index, f"Variável_{index}", value, current_time)) # Adiciona se não encontrar
+        tree.insert("", "end", values=(index, "Debugger", value, current_time)) # Adiciona se não encontrar
 
 
 # Função para controle de protocolo recebido
@@ -140,7 +141,7 @@ def process_protocol_data(data):
                 if index_str.isdigit() and value_str: # verifica se index é um dígito e value não está vazio.
                     index = int(index_str)
                     value = value_str
-                    add_variable_value(index, value)
+                    add_debugger_value(index, value)
                     return index, value
                 else:
                     print("Formato de dados inválido: Índice deve ser um dígito e o valor não pode estar vazio.")
@@ -152,24 +153,24 @@ def process_protocol_data(data):
         print(f"Erro ao processar dados: {e}")
         return None, None # retorna None, None em caso de exceção
     
-# Função para editar o nome da variável selecionada no listview
+# Função para clear do break point e enviando comando para próximo
 def clear_break_point():
     data = '#'
     send_data(data)
     break_button.configure(text="", fg_color="green")
     
-# Função para editar o nome da variável selecionada no listview
-def edit_variable_name():
+# Função para editar o nome do debugger selecionada no listview
+def edit_debugger_name():
     """Edita o nome da variável selecionada no ListView."""
     try:
         selected_item = tree.selection()[0]  # Obtém o ID do item selecionado
         if selected_item:
-            new_name = variable_entry.get()
+            new_name = debugger_entry.get()
             if new_name:  # Verifica se um novo nome foi inserido
                 current_values = tree.item(selected_item)['values']
                 new_values = (current_values[0], new_name, current_values[2], current_values[3])  # Mantém índice e valor
                 tree.item(selected_item, values=new_values)
-                variable_entry.delete(0, tk.END)  # Limpa o campo de entrada
+                debugger_entry.delete(0, tk.END)  # Limpa o campo de entrada
             else:
                 print("Por favor, insira um novo nome para a variável.")
         else:
@@ -233,41 +234,34 @@ root.columnconfigure(0, weight=1) # Faz a coluna se expandir para ocupar todo o 
 root.rowconfigure(1, weight=1)    # Faz a linha se expandir para ocupar todo o espaço
 
 # Treeview (ListView)
-tree = ttk.Treeview(frame_listview, columns=("index", "variable", "value", "time"), show="headings")
-tree.heading("index", text="Índice")
-tree.heading("variable", text="Variável")
+tree = ttk.Treeview(frame_listview, columns=("index", "debugger", "value", "time"), show="headings")
+tree.heading("index", text="Index")
+tree.heading("debugger", text="Debugger")
 tree.heading("value", text="Valor")
 tree.heading("time", text="Time")
 tree.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
 #Configurando o tamanho das colunas (opcional)
 tree.column("index", width=50, anchor=tk.CENTER, stretch=tk.NO)
-tree.column("variable", width=150, anchor=tk.W, stretch=tk.YES)
+tree.column("debugger", width=150, anchor=tk.W, stretch=tk.YES)
 tree.column("value", width=50, anchor=tk.CENTER, stretch=tk.NO)
 tree.column("time", width=50, anchor=tk.CENTER, stretch=tk.NO)
 
-# Frame para adicionar variável
-frame_add_variable = ctk.CTkFrame(root)
-frame_add_variable.grid(row=2, column=0, sticky="ew", padx=10, pady=10) # Usando grid
+# Frame para adicionar debugger
+frame_add_debugger = ctk.CTkFrame(root)
+frame_add_debugger.grid(row=2, column=0, sticky="ew", padx=0, pady=10) # Usando grid
 
-variable_entry = ctk.CTkEntry(frame_add_variable, width=140)
-variable_entry.pack(side=tk.LEFT, padx=0)
+# Textbox para editar o debugger
+debugger_entry = ctk.CTkEntry(frame_add_debugger, width=220)
+debugger_entry.pack(side=tk.LEFT, padx=10)
 
-### Botão para adicionar a variável
-##add_button = ttk.Button(frame_add_variable, text="Adicionar", command=add_variable_name)
-##add_button.pack(side=tk.LEFT, padx=5)
+# Botão para editar debugger
+edit_button = ctk.CTkButton(frame_add_debugger, font=new_fonte, text="Editar", command=edit_debugger_name, width=120)
+edit_button.pack(side=tk.LEFT, padx=0)
 
 # Botão para clear de break point
-break_button = ctk.CTkButton(frame_add_variable, font=new_fonte, text="", command=clear_break_point, width=100, fg_color="green")
+break_button = ctk.CTkButton(frame_add_debugger, font=new_fonte, text="", command=clear_break_point, width=120, fg_color="green")
 break_button.pack(side=tk.LEFT, padx=10)
-
-# Botão para editar a variável
-edit_button = ctk.CTkButton(frame_add_variable, font=new_fonte, text="Editar", command=edit_variable_name, width=100)
-edit_button.pack(side=tk.LEFT, padx=10)
-
-# Botão para limpar o ListView
-clear_button = ctk.CTkButton(frame_add_variable, font=new_fonte, text="Limpar", command=clear_listview, width=100)
-clear_button.pack(side=tk.LEFT)
 
 # Frame para sinalizar conexão serial
 style = ttk.Style()
