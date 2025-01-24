@@ -12,15 +12,18 @@ from datetime import datetime
 ctk.set_appearance_mode("dark")  # Pode ser "light", "dark", ou "system" (baseado no SO)
 ctk.set_default_color_theme("blue")  # Pode ajustar o tema de cor também, blue, dark-blue, green
 
-# Variável global para controlar a conexão serial
+
+# Variável global para controle diversos
 ser = None
 is_connected = False
 new_fonte = ("Courier New", 12)
+save_debugger = [""] * 50
 
 
 # Função para listar portas COM ativas
 def listar_portas():
     return [port.device for port in serial.tools.list_ports.comports()]
+
 
 # Função para atualizar a combobox com as portas disponíveis
 def atualizar_com_port_combo():
@@ -29,6 +32,7 @@ def atualizar_com_port_combo():
     com_port_combo.configure(values=portas)  # Atualiza os valores da combobox
     if portas:
         com_port_combo.set(portas[0])  # Seleciona a primeira porta, se houver
+
                     
 # Função para leitura da porta serial
 def read_serial():
@@ -53,6 +57,7 @@ def read_serial():
                 print(f"Porta desconectada...")
             print(f"Erro ao ler da porta serial: {e}")
 
+
 # Função para enviar dados
 def send_data(data):
     try:
@@ -61,6 +66,7 @@ def send_data(data):
             print(f"Dado enviado: {data}")
     except Exception as e:
         print(f"Erro ao enviar dados: {e}")
+
         
 # Função para conectar/desconectar à porta serial
 def conectar_serial():
@@ -78,6 +84,7 @@ def conectar_serial():
             baudrate_combo.configure(state='disabled')
             style.configure("TLabel", background="blue")
             frame_conexao.configure(style="TLabel")
+            read_debugger_list() # busca nomes na lista de debugger
             
             # Iniciar a leitura da porta serial em uma thread separada
             thread = threading.Thread(target=read_serial)
@@ -101,7 +108,7 @@ def conectar_serial():
                 clear_listview()
         except Exception as e:
             print(f"Erro ao desconectar: {e}")
-            
+
 
 # Função para adicionar o nome do debugger ao listview
 def add_debugger_name():
@@ -152,16 +159,18 @@ def process_protocol_data(data):
     except (IndexError, ValueError) as e:
         print(f"Erro ao processar dados: {e}")
         return None, None # retorna None, None em caso de exceção
+
     
 # Função para clear do break point e enviando comando para próximo
 def clear_break_point():
     data = '#'
     send_data(data)
     break_button.configure(text="", fg_color="green")
+
     
 # Função para editar o nome do debugger selecionada no listview
 def edit_debugger_name():
-    """Edita o nome da variável selecionada no ListView."""
+    global save_debugger
     try:
         selected_item = tree.selection()[0]  # Obtém o ID do item selecionado
         if selected_item:
@@ -170,6 +179,7 @@ def edit_debugger_name():
                 current_values = tree.item(selected_item)['values']
                 new_values = (current_values[0], new_name, current_values[2], current_values[3])  # Mantém índice e valor
                 tree.item(selected_item, values=new_values)
+                save_debugger[current_values[0]] = new_name # salva nome na lista de debugger
                 debugger_entry.delete(0, tk.END)  # Limpa o campo de entrada
             else:
                 print("Por favor, insira um novo nome para a variável.")
@@ -177,8 +187,16 @@ def edit_debugger_name():
             print("Por favor, selecione uma variável para editar.")
     except IndexError:
         print("Nenhuma variável selecionada.")
+        
 
-
+# Função para reescrever nome dos debugger
+def read_debugger_list():
+    global save_debugger
+    for index in range(len(save_debugger)):
+        if save_debugger[index] != "":
+            tree.insert("", "end", values=(index, save_debugger[index], "", ""))  # Valor, Time = Empty
+            
+            
 # Função para limpar todo o listview
 def clear_listview():
     """Limpa todos os itens do ListView."""
@@ -191,6 +209,7 @@ def show_received_message():
     style.configure("TLabel", background="yellow")
     frame_conexao.configure(style="TLabel")
     root.after(500, clear_received_message) # Mostra por 500ms (0.5 segundos)
+
 
 def clear_received_message():
     style.configure("TLabel", background="blue")
